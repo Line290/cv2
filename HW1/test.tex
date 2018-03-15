@@ -1,0 +1,64 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\cvprfinalcopy % *** Uncomment this line for the final submission
+
+\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+%\ifcvprfinal\pagestyle{empty}\fi
+\setcounter{page}{1}
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{CV Homework 1}
+
+\author{Daquan Lin\\
+ShanghaiTech University\\
+student ID: 85610653\\
+{\tt\small lindq@shanghaitech.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+%\thispagestyle{empty}
+
+
+\begin{description}
+\item[Q1]: How to evaluate the perf{}ormance of different methods for eye fixation?
+\item[A1]: Using ROC Area Under the Curve(AUC)\cite{davis2006relationship} to compare a saliency map(compute by fixation algorithm) against human eye fixation. However, due to dataset bias\cite{li2014secrets}, Talter proposed a shuffled-AUC(s-AUC) score\cite{tatler2005visual} to normalize the effect of center-bias. In s-AUC, positive samples are taken from the fixations of the test image, whereas the negative samples are from all fixations across all other images. If an algorithm get a high AUC score, then it has good performance.\\
+\item[Q2]: How to evaluate the performance of different methods for salient object detection?
+\item[A2]: F-measure\cite{powers2011evaluation}. For salient object segmentation task, the test/ground-truth saliency maps are binary maps obtained by first averaging the individual segmentations from the test/ground-truth subset, and then threshold with $Th=0.5$ to generate the binary masks for each subset. Then compute F-measure of the test subset\cite{li2014secrets}. Also, if the F-measure of method is big, then this method has good preformance.\\
+\item[Q3]: Survey all existing saliency detection datasets and how the ground truth annotated in these datasets.
+\item[A3]: PASCAL-S\cite{li2014secrets}: first manually perform a full segmentation to crop out all objects in the image. 
+ following rules: 1) do not intentionally label parts of the image (e.g. faces of a person); 2) disconnected regions of the same object are labeled separately; 3) use solid regions to approximate hollow objects, such as bike wheels.\\
+FT\cite{achanta2009frequency}: 	Can't open this link in paper\cite{achanta2009frequency}. \url{http://ivrg.epfl.ch/supplementary material/RK CVPR09/index.html}\\
+Bruce\cite{bruce2006saliency}: 70 subjects under the instruction to label the single most salient object in the image\cite{li2014secrets}. Per pixel raw count of annotations, e.g. the number of subjects that mark the pixel as salient object.\\
+IS\cite{li2013visual}, MSRA10K\cite{ChengPAMI}\cite{13iccv/Cheng_Saliency}\cite{SalObjSurvey}\cite{SalObjBenchmark} etc.\\
+
+{}
+\end{description}
+{\small
+\bibliographystyle{ieee}
+\bibliography{reference}
+	
+}
+\end{document}
