@@ -1,0 +1,53 @@
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\cvprfinalcopy % *** Uncomment this line for the final submission
+
+\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+%\ifcvprfinal\pagestyle{empty}\fi
+\setcounter{page}{1}
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{How to use BP to optimize CNN}
+
+\author{Daquan Lin 85610653\\
+ShanghaiTech University\\
+Shanghai, China\\
+{\tt\small lindq@shanghaitech.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+%\thispagestyle{empty}
+From the loss, we calculate the parameters' gradient layer by layer, including weight matrix each layer(both Conv layer and dense layer) and the inputs' gradient(it use to calculate the above layer's weight),  and update each layer's weight according to the layer's weight gradient.\\
+Optimization methods: such as SGD, SGD+Momentum, Nesterov Momentum, AdaGrad, RMSProp and Adam.\\
+You can see it in below link:\\
+\url{http://cs231n.stanford.edu/slides/2017/cs231n_2017_lecture7.pdf}\\
+In terms of how to calculate the gradient.\\
+Please look at the below link:\\
+\url{https://github.com/Line290/cs231n_1017spring/blob/master/assignment2/cs231n/layers.py}
+
+
+
+\end{document}
