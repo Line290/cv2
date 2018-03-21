@@ -1,0 +1,98 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amssymb}
+\usepackage{bm}
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\cvprfinalcopy % *** Uncomment this line for the final submission
+
+\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+%\ifcvprfinal\pagestyle{empty}\fi
+\setcounter{page}{1}
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{K-means and Mean Shift report}
+
+\author{Daquan Lin 85610653\\
+ShanghaiTech University\\
+Shanghai, China\\
+{\tt\small lindq@shanghaitech.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+%\thispagestyle{empty}
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+   This report introduces two approaches to cluster The Extended Yale Face Database B\cite{GeBeKr01} , they are K-means and Mean Shift. Due to the original face image set has so many unrecognizable face images, and a classmate found each info file has list 22 easy to recognized images for the person order from NO.1 to NO.10. I implemented Local binary patterns(LBP)\cite{ahonen2006face},\cite{ahonen2004face} to increase the Euclidean distance among the images from diffierent people. The codes shown in \emph{K-means.ipynb} and \emph{MeanShift.ipynb}.
+
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+Both K-means and Mean Shift algorithms are unsupervised model. For K-means, there are a lot of people doing face recognization\cite{sung1998example},\cite{su2001modified}. For Mean Shift, \cite{chen2006total} show some work in variabel lighting Mean Shift face recognization.
+
+\par In section 2, I will show how to extract the two datasets and some pretreatment. In section 3, I will discuss how to implement K-means model and some problem I faced and how to fix them. Then, I will compare the performances of two datasets. In section 4, I will talk about how to implement simple Mean Shift. Last, come with a conclusion.
+
+%-------------------------------------------------------------------------
+\section{Dataset Treatment}
+We can find each info file has list 22(it should be 23, but the face image named with some person's name is too dark to recognized.) easy to recognized images for the person order from NO.1 to NO.10. I extracted these clear face images and implemented LBP to decrease the effect of background, save them in path: /data2 as type of NumPy Array. I called this dataset Mini-CroppedYaleB(MCYB) dataset, it has 220 face images in total. Also, for all face images, I just resize their resolution to $42\times 48$, where original resolution is $168\times 192$ mostly. I save them in path: /data as type of NumPy Array.
+
+\section{K-means Model}
+First, suppose the training dataset is $\bm{X}$, which shape is $N\times D$. $N$ is number of training face images and $D$ is flatted image row by row. I generated $K$ cluster centers, each one has the same length with the training data, which has $D$ dimension. Then, calculate the Euclidean distance between the each sample $\bm{x_i} i=1,\dots,N$ and each center $\bm{k_j}, j=1,\dots,K$. So we will have a distance matrix with shape of $N\times K$, each entry is $dis_{i,j}$. I clustered the $\bm{x_i}$ in set $\bm{X^j}$, which get minimum distance in same $\bm{k_j}$. And, calculate the new center $\bm{k_j^{\prime}}$through calculate the mean of $\bm{X^j}$. Repeat do it, untill 10 iterates or more.
+\begin{equation}
+dis_{i,j} = ||\bm{x_i} - \bm{k_j}||, i=1,\dots, N, j=1, \dots, K.
+\end{equation}
+\begin{equation}
+\bm{X_j} = \bm{X}[argmin_{j\in K}dis_{i,j}]
+\end{equation}
+\begin{equation}
+\bm{k_j^{\prime}} = \frac{1}{M} \sum\bm{X_j}, M = len(X_j), j = 1,\dots, K
+\end{equation}
+\par When calculate the accuracy, I search each clusters$\bm{X_j}$ to find the most frequent original label$y_p,p=1,\dots, K$and replace $y\_pred_j$ with $y_p$. Finally, we get the accuracy by $equ(5)$.
+\begin{equation}
+y\_pred_j^{\prime} = MAX[y\_pred_j==y_p], j,p=1,\dots, K
+\end{equation}
+\begin{equation}
+accuracy = \frac{1}{N}[y\_pred^{\prime} == y]
+\end{equation}
+
+\subsection{Two Datasets Results}
+In MCYB dataset, I get the accuracy is approximately $75\%$. While in original full dataset, it just get about $31.6\%$.
+
+\section{Mean Shift Model}
+In implement the Mean Shift Model, I chose a new center from the point that hasn't been visited, randomly. And group the neighbor point whose distance to the center is small than a radius as a class, along with mark them have been visited. Then, calculate the mean shift vector through calculate the mean of vectors that all points in the interesting areas point to the center, untill the Euclidean distance of mean shift vector is small than a threshold. Update the center by add the mean shift vector.
+\par If a new center isn't overlap with existance centers, then add a new cluster, or union them with same label and update the new center as mean of both of two centers.
+\par The calculation of accuracy is almost the same as K-means model. However, there is a bit different from K-means, since the number of cluster isn't decided before running the model.
+\subsection{Two Dataset Results}
+In MCYB dataset, I get the accuracy is approximately $76.4\%$. While in original full dataset, it just get about $4.0\%$. It seems very terrible accuracy
+
+\section{Conclusion}
+I implement two methods to cluster the face image from the CroppedYaleB dataset. They are K-means and Mean Shift, respectively. In MCYB dataset, both of two model get accuracy up to $75\%$. However, in original dataset, the accuracies of two model has a huge gap. Since the Mean Shift is more powerful than K-means, I think it maybe lack of tuning the Mean Shift model or preprocess to the face images.
+
+
+{\small
+\bibliographystyle{ieee}
+\bibliography{ClusterAlgorithm.bib}
+}
+
+\end{document}
