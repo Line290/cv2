@@ -87,7 +87,7 @@ with two pages of references would have a total length of 10 pages.
 Overlength papers will simply not be reviewed.  This includes papers
 where the margins and formatting are deemed to have been significantly
 altered from those laid down by this style guide.  Note that this
-\LaTeX\ guide already sets figure captions and references in a smaller font.
+\LaTeX\ guide already sets  captions and references in a smaller font.
 The reason such papers will not be reviewed is that there is no provision for
 supervised revisions of manuscripts.  The reviewing process cannot determine
 the suitability of the paper for presentation in eight pages if it is
@@ -106,7 +106,7 @@ camera ready copy should not contain a ruler. (\LaTeX\ users may uncomment
 the \verb'\cvprfinalcopy' command in the document preamble.)  Reviewers:
 note that the ruler measurements do not align well with lines in the paper
 --- this turns out to be very difficult to do well when the paper contains
-many figures and equations, and, when done, looks ugly.  Just use fractional
+many s and equations, and, when done, looks ugly.  Just use fractional
 references (e.g.\ this line is $095.5$), although in most cases one would
 expect that the approximate location will be adequate.
 
@@ -237,17 +237,17 @@ FAQ\medskip\\
 
 
 
-\begin{figure}[t]
+\begin{}[t]
 \begin{center}
 \fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
-   %\includegraphics[width=0.8\linewidth]{egfigure.eps}
+   %\includegraphics[width=0.8\linewidth]{eg.eps}
 \end{center}
    \caption{Example of caption.  It is set in Roman so that mathematics
    (always set in Roman: $B \sin A = A \sin B$) may be included without an
    ugly clash.}
 \label{fig:long}
 \label{fig:onecol}
-\end{figure}
+\end{}
 
 \subsection{Miscellaneous}
 
@@ -281,13 +281,13 @@ chronological) order, so prefer \cite{Alpher03,Alpher02,Authors14} to
 \cite{Alpher02,Alpher03,Authors14}.
 
 
-\begin{figure*}
+\begin{*}
 \begin{center}
 \fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
 \end{center}
    \caption{Example of a short caption, which should be centered.}
 \label{fig:short}
-\end{figure*}
+\end{*}
 
 %------------------------------------------------------------------------
 \section{Formatting your paper}
@@ -352,8 +352,8 @@ inch or 0.422 cm). Make sure your text is fully justified---that is,
 flush left and flush right. Please do not place any additional blank
 lines between paragraphs.
 
-Figure and table captions should be 9-point Roman type as in
-Figures~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
+ and table captions should be 9-point Roman type as in
+s~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
 
 \noindent Callouts should be 9-point Helvetica, non-boldface type.
 Initially capitalize only the first word of section titles and first-,
@@ -410,15 +410,15 @@ Ours & Makes one's heart Frob\\
 \subsection{Illustrations, graphs, and photographs}
 
 All graphics should be centered.  Please ensure that any point you wish to
-make is resolvable in a printed copy of the paper.  Resize fonts in figures
+make is resolvable in a printed copy of the paper.  Resize fonts in s
 to match the font in the body text, and choose line widths which render
 effectively in print.  Many readers (and reviewers), even of an electronic
 copy, will choose to print your paper in order to read it.  You cannot
 insist that they do otherwise, and therefore must not assume that they can
 zoom in to see tiny details on a graphic.
 
-When placing figures in \LaTeX, it's almost always best to use
-\verb+\includegraphics+, and to specify the  figure width as a multiple of
+When placing s in \LaTeX, it's almost always best to use
+\verb+\includegraphics+, and to specify the   width as a multiple of
 the line width as in the example below
 {\small\begin{verbatim}
    \usepackage[dvips]{graphicx} ...

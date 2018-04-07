@@ -1,0 +1,130 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+\usepackage{cvpr}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{subfig} 
+\usepackage{geometry}%页面设置  
+\usepackage{graphics}%图片设置  
+\usepackage{caption}%注释设置  
+% Include other packages here, before hyperref.
+
+% If you comment hyperref and then uncomment it, you should delete
+% egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
+% run, let it finish, and you should be clear).
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
+
+\cvprfinalcopy % *** Uncomment this line for the final submission
+
+\def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+
+% Pages are numbered in submission mode, and unnumbered in camera-ready
+%\ifcvprfinal\pagestyle{empty}\fi
+\setcounter{page}{1}
+\begin{document}
+
+%%%%%%%%% TITLE
+\title{Report: Segmentation of Natural Images by Texture and Boundary Compression}
+
+\author{Daquan Lin 85610653\\
+ShanghaiTech University\\
+Shanghai, China\\
+{\tt\small lindq@shanghaitech.edu.cn}
+% For a paper whose authors are all at the same institution,
+% omit the following lines up until the closing ``}''.
+% Additional authors and addresses can be added with ``\and'',
+% just like the second author.
+% To save space, use either the email address or home page, not both
+}
+
+\maketitle
+%\thispagestyle{empty}
+
+%%%%%%%%% ABSTRACT
+\begin{abstract}
+   This report introduces how to implement the algorithm for segmentation of natural images show in this paper\cite{Mobahi2011Segmentation}. I test our algorithm on the publicly available Berkeley Segmentation Dataset(BSD)\cite{MartinFTM01}.
+
+\end{abstract}
+
+%%%%%%%%% BODY TEXT
+\section{Introduction}
+
+
+
+\par In section 2, I will show how to extract the two datasets and some pretreatment. In section 3, I will discuss how to implement K-means model and some problem I faced and how to fix them. Then, I will compare the performances of two datasets. In section 4, I will talk about how to implement simple Mean Shift. Last, come with a conclusion.
+
+%-------------------------------------------------------------------------
+\section{Texture Encoding}
+In this operation, I encoded all texture vectors in $\bm{\hat X}$ to represent region $R$. It seems that I must increase $\varepsilon$ to get a good result.
+So for coding the region $R$ becomes:
+\begin{equation}
+L_{w,\varepsilon}(R) = (\frac{D}{2} + \frac{N}{2w^2})\log_2 det(I+\frac{D}{\varepsilon^2}\hat \sum_w)+\frac{D}{2}\log_2(1+\frac{||\bm{\hat \mu_w}||^2}{\varepsilon^2})
+\end{equation}
+where, $D=8$, $N$ is the number fo pixels in a region$R$, $w$ is the window size and $\mu$ , $\sum$ are the mean and covariance of the verctors in $\bm{\hat X}$.
+\section{Boundary Encoding}
+I implemented \bf{Freeman chain code} by find a start point, and then search next boundary point until find the start point. Next, the coding length $B(R)$is improved by using an adaptive Huffman code that leverages the prior distribution of the chain codes. Suppose an initial orientation (expressed in chain code)$o_t$, the difference chain code of the following orientation $o_{t+1}$ is $\Delta o_t\dot{=}mod(o_t-o_{t+1}, 8)$.
+\begin{equation}
+B(R) = -\sum_{i=0}^{7}\#(\Delta o_t = i)\log_2(P[\Delta o=i])
+\end{equation}
+\section{Minimization of the Total Coding Length Function}
+Suppose an image $I$ can be segmented into non-overlapping regions$\mathcal{R}=\{R_1, \dot, R_k\}$, $\cup_{i=1}^{k}R_i=I$. The total coding length of the image $I$ is
+\begin{equation}
+L_{w,\epsilon}^{S}(\mathcal{R})\dot{=}\sum_{i=1}^{k}L_{w,\epsilon}(R_i)+\frac{1}{2}B(R_i)
+\end{equation}
+The optimal segmentation of $I$ is the one that minimizes$L_{w,\epsilon}^{S}(\mathcal{R})$. By find the pair of regions $R_i$ and $R_j$ that will maximally decrease if merged:
+\begin{equation}
+\begin{split}
+(R_i^{\*}, R_j^{\*}) &=  argmax_{R_i, R_j\in\mathcal{R}}\Delta L_{w,\epsilon}(R_i, R_j), where\\
+\Delta L_{w,\epsilon}(R_i, R_j) &\dot{=} L_{w,\epsilon}^S(\mathcal{R}) - L_{w,\epsilon}^S((\mathcal{R}\setminus \{R_i, R_j\})\cup\{R_i\cup R_j\})\\
+&=L_{w,\epsilon}(R_i) + L_{w,\epsilon}(R_j) - L_{w,\epsilon}(R_i\cup R_j) + \frac{1}{2}(B(R_i)+B(R_j) - B(R_i\cup R_j))
+\end{split}
+\end{equation}
+If $\Delta L_{w,\epsilon}(R_i, R_j)>0$, merge $R_i^{\*}$and $R_j^{\*}$ into one region, label as $i = min(i,j)$, and repeat this process, continuing until the coding length $L_{w,\epsilon}^S(\mathcal{R})$ can not be furture reduced.
+
+\section{Implementation}
+Change the RBG image to Lab color space. \\
+For each window size $W\in[7,5,3,1]$, apply pixel patch and flat each patch to get the $w$-neighborhood $W_w(p)$. Define the set of features X by taking the w- neighborhood around each pixel in I, and then stacking the window as a column vector:
+\begin{equation}
+X = \{\bm{x}_p\in\mathcal{R}^{3w^2}:\bm{x}_p = W_w(p)^S for p\in I\}
+\end{equation}
+For ease of computation, I further reduce the dimensionality of these features by projecting the set of all features $\bm{X}$ onto their first $\bm{D}$ principal components. We denote the set of features with reduced dimensionality as $\bm{\hat X}$. We have observed that for many natural images, the first eight principal components of X contain over 99\% of the energy. In this paper, we choose to assign $\bm{D} = 8$. \\
+For each region or Superpixel in different window size$w$, I generated a map, that is if a region is degenerate$\mathcal{I}_w(R) = \emptyset$, it equal to $1$, while equal to $0$.\\
+I further construct a region adjacency graph(RAG) by scikit-image package and set each edge weight equal to $1$ and repeat merge two regions as shown in Section 4.\\
+
+\section{Result}
+\begin{figure}[htb]
+\centering
+  \begin{tabular}{@{}ccc@{}}
+    \includegraphics[width=.2\textwidth]{2092.png} &
+    \includegraphics[width=.2\textwidth]{8049.png} &
+    % \includegraphics[width=.2\textwidth]{2092.png} &
+    \includegraphics[width=.2\textwidth]{23025.png}   \\
+    \includegraphics[width=.2\textwidth]{2092eps300.png} &
+    \includegraphics[width=.2\textwidth]{8049eps300.png} &
+    % \includegraphics[width=.23\textwidth]{2092.png} &
+    \includegraphics[width=.2\textwidth]{23025eps300.png}   \\
+    \includegraphics[width=.2\textwidth]{2092eps600.png} &
+    \includegraphics[width=.2\textwidth]{8049eps600.png} &
+    % \includegraphics[width=.23\textwidth]{2092.png} &
+    \includegraphics[width=.2\textwidth]{23025eps600.png}   \\
+    % \multicolumn{3}{c}{\includegraphics[width=.2\textwidth]{2092.png}}
+  \end{tabular}
+  \caption{raw 0:$\varepsilon =0$,raw 1:$\varepsilon =300$, raw 2:$\varepsilon =600$ }
+\end{figure}
+
+\section{Conclusion}
+In this report, I implemented Segmentation of Natural Images by Texture and Boundary Compression. Results show different with different $\varepsilon$.
+
+
+{\small
+\bibliographystyle{ieee}
+\bibliography{ClusterAlgorithm.bib}
+}
+
+\end{document}
